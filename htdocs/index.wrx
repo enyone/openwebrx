@@ -40,22 +40,9 @@
 <div id="webrx-page-container">
 	<div id="webrx-top-container">
 		<div id="webrx-top-photo-clip"> 
-			<img src="gfx/openwebrx-top-photo.jpg" id="webrx-top-photo"/> 
-			<div id="webrx-rx-photo-title">%[RX_PHOTO_TITLE]</div>
-			<div id="webrx-rx-photo-desc">%[RX_PHOTO_DESC]</div>
 		</div>
 		<div id="webrx-top-bar-background" class="webrx-top-bar-parts"></div>
 		<div id="webrx-top-bar" class="webrx-top-bar-parts">
-			<a href="http://openwebrx.org/" target="_blank"><img src="gfx/openwebrx-top-logo.png" id="webrx-top-logo" /></a>
-			<a href="http://ha5kfu.sch.bme.hu/" target="_blank"><img src="gfx/openwebrx-ha5kfu-top-logo.png" id="webrx-ha5kfu-top-logo" /></a>
-			<img id="webrx-rx-avatar-background" src="gfx/openwebrx-avatar-background.png" onclick="toggle_rx_photo();"/>
-			<img id="webrx-rx-avatar" src="gfx/openwebrx-avatar.png" onclick="toggle_rx_photo();"/>
-			<div id="webrx-rx-title" onclick="toggle_rx_photo();">%[RX_TITLE]</div>
-			<div id="webrx-rx-desc" onclick="toggle_rx_photo();">%[RX_LOC] | Loc: %[RX_QRA], ASL: %[RX_ASL] m, <a href="https://www.google.hu/maps/place/%[RX_GPS]" target="_blank" onclick="dont_toggle_rx_photo();">[maps]</a></div>
-			<div id="openwebrx-rx-details-arrow">
-				<a id="openwebrx-rx-details-arrow-up" onclick="toggle_rx_photo();"><img src="gfx/openwebrx-rx-details-arrow-up.png" /></a>
-				<a id="openwebrx-rx-details-arrow-down" onclick="toggle_rx_photo();"><img src="gfx/openwebrx-rx-details-arrow.png" /></a>
-			</div>
 			<section id="openwebrx-main-buttons">
 				<ul>
 					<li onmouseup="toggle_panel('openwebrx-panel-status');"><img src="gfx/openwebrx-panel-status.png" /><br/>Status</li>
@@ -74,15 +61,28 @@
 				<!-- add canvas here by javascript -->
 			</div>
 			<div id="openwebrx-panels-container">
-				<div class="openwebrx-panel" id="openwebrx-panel-receiver" data-panel-name="client-params" data-panel-pos="right" data-panel-order="0" data-panel-size="215,70">
+				<div class="openwebrx-panel" id="openwebrx-panel-receiver" data-panel-name="client-params" data-panel-pos="right" data-panel-order="0" data-panel-size="315,70">
 					<div id="webrx-actual-freq">---.--- MHz</div>
 					<div id="webrx-mouse-freq">---.--- MHz</div>
 					<!--<div class="openwebrx-button" onclick="ws.send('SET mod=wfm');" >WFM</div>-->
-					<div class="openwebrx-button" onclick="demodulator_analog_replace('nfm');">FM</div>
-					<div class="openwebrx-button" onclick="demodulator_analog_replace('am');">AM</div>					
-					<div class="openwebrx-button" onclick="demodulator_analog_replace('lsb');">LSB</div>
-					<div class="openwebrx-button" onclick="demodulator_analog_replace('usb');">USB</div>
-					<div class="openwebrx-button" onclick="demodulator_analog_replace('cw');">CW</div>
+					<div>
+						<div class="openwebrx-button" onclick="demodulator_analog_replace('nfm');">FM</div>
+						<div class="openwebrx-button" onclick="demodulator_analog_replace('am');">AM</div>					
+						<div class="openwebrx-button" onclick="demodulator_analog_replace('lsb');">LSB</div>
+						<div class="openwebrx-button" onclick="demodulator_analog_replace('usb');">USB</div>
+						<div class="openwebrx-button" onclick="demodulator_analog_replace('cw');">CW</div>
+						<div class="openwebrx-button" onclick="waterfall_contrast(false);">-</div>
+						<div class="openwebrx-button" onclick="waterfall_contrast(true);">+</div>
+					</div>
+					<div>
+						<div class="openwebrx-button" onclick="ws.send('SET center_freq=1800000');">160m</div>
+                                                <div class="openwebrx-button" onclick="ws.send('SET center_freq=3500000');">80m</div>
+                                                <div class="openwebrx-button" onclick="ws.send('SET center_freq=5200000');">60m</div>
+                                                <div class="openwebrx-button" onclick="ws.send('SET center_freq=7000000');">40m</div>
+                                                <div class="openwebrx-button" onclick="ws.send('SET center_freq=10000000');">30m</div>
+                                                <div class="openwebrx-button" onclick="ws.send('SET center_freq=14000000');">20m</div>
+                                                <div class="openwebrx-button" onclick="ws.send('SET center_freq=18000000');">17m</div>
+					</div>
 				</div>
 				<div class="openwebrx-panel" id="openwebrx-panel-log" data-panel-name="debug" data-panel-pos="left" data-panel-order="1" data-panel-size="619,142">
 					<div class="openwebrx-panel-inner" id="openwebrx-log-scroll">

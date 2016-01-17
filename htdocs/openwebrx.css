@@ -113,7 +113,6 @@ html, body
 	bottom: 0px;
 	width: 100%;
 	height: 117px;
-	background-image:url(gfx/webrx-bottom-bar.png);
 }*/
 
 #webrx-page-container
@@ -127,7 +126,6 @@ html, body
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
-	background-image:url(gfx/webrx-photo-gradient-corner.png);	
 	width: 59px;
 	height: 92px;
 
@@ -140,7 +138,6 @@ html, body
 	left: 59px;
 	right: 59px;
 	height: 92px;
-	background-image:url(gfx/webrx-photo-gradient-middle.png);	
 }
 
 #webrx-photo-gradient-right
@@ -148,7 +145,6 @@ html, body
 	position: absolute;
 	bottom: 0px;
 	right: 0px;
-	background-image:url(gfx/webrx-photo-gradient-corner.png);	
 	width: 59px;
 	height: 92px;
    -webkit-transform:scaleX(-1);
@@ -252,25 +248,20 @@ html, body
 #openwebrx-scale-container
 {
 	height: 47px;
-	background-image: url("gfx/openwebrx-scale-background.png");
 	background-repeat: repeat-x;
 	overflow: hidden;
 	z-index:1000;
 	position: relative;
+        background-color: #555555;        
 }
 
 #webrx-canvas-container
 {
-	/*background-image:url('gfx/openwebrx-blank-background-1.jpg');*/
 	position: relative;
 	height: 2000px;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	/*background-color: #646464;*/
-	/*background-image: -webkit-linear-gradient(top, rgba(247,247,247,1) 0%, rgba(0,0,0,1) 100%);*/
-	background-image: url('gfx/openwebrx-background-cool-blue.png');
-	background-repeat: no-repeat;
-	background-color: #1e5f7f;
+	background-color: #000000;
 	cursor: crosshair;
 }
 

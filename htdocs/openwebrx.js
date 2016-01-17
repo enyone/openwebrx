@@ -126,29 +126,32 @@ function animate(object,style_name,unit,from,to,accel,time_ms,fps,to_exec)
 {
 	//console.log(object.className);
 	if(typeof to_exec=="undefined") to_exec=0;
-	object.style[style_name]=from.toString()+unit;
-	object.anim_i=0;
-	n_of_iters=time_ms/(1000/fps);
-	change=(to-from)/(n_of_iters);
-	if(typeof object.anim_timer!="undefined") { window.clearInterval(object.anim_timer);  }
-	object.anim_timer=window.setInterval(
-		function(){
-			if(object.anim_i++<n_of_iters)
-			{
-				if(accel==1) object.style[style_name]=(parseFloat(object.style[style_name])+change).toString()+unit;
-				else 
-				{ 
-					remain=parseFloat(object.style[style_name])-to;
-					if(Math.abs(remain)>9||unit!="px") new_val=(to+accel*remain);
-					else {if(Math.abs(remain)<2) new_val=to;
-					else new_val=to+remain-(remain/Math.abs(remain));}
-					object.style[style_name]=new_val.toString()+unit;
+	if(object)
+	{
+		object.style[style_name]=from.toString()+unit;
+		object.anim_i=0;
+		n_of_iters=time_ms/(1000/fps);
+		change=(to-from)/(n_of_iters);
+		if(typeof object.anim_timer!="undefined") { window.clearInterval(object.anim_timer);  }
+		object.anim_timer=window.setInterval(
+			function(){
+				if(object.anim_i++<n_of_iters)
+				{
+					if(accel==1) object.style[style_name]=(parseFloat(object.style[style_name])+change).toString()+unit;
+					else 
+					{ 
+						remain=parseFloat(object.style[style_name])-to;
+						if(Math.abs(remain)>9||unit!="px") new_val=(to+accel*remain);
+						else {if(Math.abs(remain)<2) new_val=to;
+						else new_val=to+remain-(remain/Math.abs(remain));}
+						object.style[style_name]=new_val.toString()+unit;
+					}
 				}
-			}
-			else 
-				{object.style[style_name]=to.toString()+unit; window.clearInterval(object.anim_timer); delete object.anim_timer; }
-			if(to_exec!=0) to_exec();
-		},1000/fps);
+				else 
+					{object.style[style_name]=to.toString()+unit; window.clearInterval(object.anim_timer); delete object.anim_timer; }
+				if(to_exec!=0) to_exec();
+			},1000/fps);
+	}
 }
 
 function animate_to(object,style_name,unit,to,accel,time_ms,fps,to_exec)
@@ -1020,9 +1023,12 @@ function on_ws_recv(evt)
 		{
 			fft_codec.reset();
 			var waterfall_i16=fft_codec.decode(new Uint8Array(evt.data,4));
-			var waterfall_f32=new Float32Array(waterfall_i16.length-COMPRESS_FFT_PAD_N);
-			for(var i=0;i<waterfall_i16.length;i++) waterfall_f32[i]=waterfall_i16[i+COMPRESS_FFT_PAD_N]/100;
-			waterfall_add_queue(waterfall_f32);
+			if(waterfall_i16.length > COMPRESS_FFT_PAD_N)
+			{
+				var waterfall_f32=new Float32Array(waterfall_i16.length-COMPRESS_FFT_PAD_N);
+				for(var i=0;i<waterfall_i16.length;i++) waterfall_f32[i]=waterfall_i16[i+COMPRESS_FFT_PAD_N]/100;
+				waterfall_add_queue(waterfall_f32);
+			}
 		}
 	} else if(firstChars=="MSG")
 	{
@@ -1508,6 +1514,20 @@ function open_websocket()
 
 var color_scale=[0x000000ff,0x000000ff,0x000000ff,0x000000ff,0x000000ff,0x000000ff,0x000000ff,0x222222ff,0x444444ff,0x666666ff,0x888888ff,0xaaaaaaff,0xccccccff,0xeeeeeeff,0xffcc00ff,0xffff00ff];
 
+function waterfall_contrast(add)
+{
+	if(add)
+	{
+		color_scale.unshift(0x000000ff);
+		color_scale.unshift(0x000000ff);
+		color_scale.push(0xffff00ff);
+	} else if(color_scale.length > 16) {
+		color_scale.pop();
+		color_scale.shift();
+		color_scale.shift();
+	}
+}
+
 function waterfall_mkcolor(db_value)
 {
 	min_value=-115; //in dB
@@ -1622,6 +1642,8 @@ function resize_canvases(zoom)
 function waterfall_init()
 {
 	init_canvas_container();
+	if(waterfall_timer)
+		window.clearInterval(waterfall_timer);
 	waterfall_timer = window.setInterval(waterfall_dequeue,900/fft_fps);
 	resize_waterfall_container(false); /* then */ resize_canvases();
 	scale_setup();
@@ -1739,7 +1761,7 @@ function waterfall_shift()
 
 function check_top_bar_congestion()
 {
-	var rmf=function(x){ return x.offsetLeft+x.offsetWidth; };
+	var rmf=function(x){ return x ? x.offsetLeft+x.offsetWidth : 0; };
 	var wet=e("webrx-rx-title");
 	var wed=e("webrx-rx-desc");
 	var rightmost=Math.max(rmf(wet),rmf(wed));
@@ -1747,7 +1769,7 @@ function check_top_bar_congestion()
 
 	[wet, wed].map(function(what) { 
 		if(rmf(what)>tl.offsetLeft-20) what.style.opacity=what.style.opacity="0"; 
-		else wet.style.opacity=wed.style.opacity="1";
+		else if(wet && wed) wet.style.opacity=wed.style.opacity="1";
 	});
 
 }
