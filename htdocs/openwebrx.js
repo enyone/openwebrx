@@ -1479,6 +1479,12 @@ function on_ws_error(event)
 
 String.prototype.startswith=function(str){ return this.indexOf(str) == 0; }; //http://stackoverflow.com/questions/646628/how-to-check-if-a-string-startswith-another-string
 
+function reload_websocket()
+{
+        ws.close();
+        open_websocket();
+}
+
 function open_websocket()
 {
 	//if(ws_url.startswith("ws://localhost:")&&window.location.hostname!="127.0.0.1"&&window.location.hostname!="localhost")
@@ -1500,16 +1506,7 @@ function open_websocket()
 	ws.onerror = on_ws_error;
 }
 
-//var color_scale=[0xFFFFFFFF, 0x000000FF];
-//var color_scale=[0x000000FF, 0x000000FF, 0x3a0090ff, 0x10c400ff, 0xffef00ff, 0xff5656ff];
-//var color_scale=[0x000000FF, 0x000000FF, 0x534b37ff, 0xcedffaff, 0x8899a9ff,  0xfff775ff, 0xff8a8aff, 0xb20000ff];
-
-//var color_scale=[ 0x000000FF, 0xff5656ff, 0xffffffff];
-
-//2014-04-22
-var color_scale=[0x000000ff,0x2e6893ff, 0x69a5d0ff, 0x214b69ff, 0x9dc4e0ff,  0xfff775ff, 0xff8a8aff, 0xb20000ff]
-//2015-04-10
-//var color_scale=[0x112634ff,0x4991c6ff,0x18364cff,0x9dc4e0ff,0xfff775ff,0xff9f60,0xff4d4dff,0x8d0000ff];
+var color_scale=[0x000000ff,0x000000ff,0x000000ff,0x000000ff,0x000000ff,0x000000ff,0x000000ff,0x222222ff,0x444444ff,0x666666ff,0x888888ff,0xaaaaaaff,0xccccccff,0xeeeeeeff,0xffcc00ff,0xffff00ff];
 
 function waterfall_mkcolor(db_value)
 {

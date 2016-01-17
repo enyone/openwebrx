@@ -80,7 +80,7 @@ def handle_signal(signal, frame):
 	spectrum_dsp.stop()
 	os._exit(1) #not too graceful exit
 
-rtl_thread=spectrum_dsp=server_fail=None
+rtl_thread=rtl_mus_thread=spectrum_dsp=server_fail=None
 
 def main():
 	global clients, clients_mutex, pypy, lock_try_time, avatar_ctime, cfg
@@ -92,9 +92,12 @@ def main():
 	print "Author contact info:    Andras Retzler, HA7ILM <randras@sdr.hu>"
 	print 
 
-	no_arguments=len(sys.argv)==1
+	no_arguments=len(sys.argv)<2
 	if no_arguments: print "[openwebrx] Configuration script not specified. I will use: \"config_webrx.py\""
 	cfg=__import__("config_webrx" if no_arguments else sys.argv[1])
+        if len(sys.argv) == 3:
+               cfg.center_freq = int(sys.argv[2])+cfg.upconverter_freq        
+               cfg.shown_center_freq = cfg.center_freq-cfg.upconverter_freq
 
 	#Set signal handler
 	signal.signal(signal.SIGINT, handle_signal) #http://stackoverflow.com/questions/1112343/how-do-i-capture-sigint-in-python
@@ -115,23 +118,8 @@ def main():
 	except:
 		pass
 
-	#Start rtl thread
-	if cfg.start_rtl_thread:
-		rtl_thread=threading.Thread(target = lambda:subprocess.Popen(cfg.start_rtl_command, shell=True),  args=())
-		rtl_thread.start()
-		print "[openwebrx-main] Started rtl_thread: "+cfg.start_rtl_command
-
-	#Run rtl_mus.py in a different OS thread
-	python_command="pypy" if pypy else "python2"
-	rtl_mus_cmd = python_command+" rtl_mus.py config_rtl"
-	if os.system("ncat --version > /dev/null") != 32512:
-		print "[openwebrx-main] ncat detected, using it instead of rtl_mus:"
-		rtl_mus_cmd = "ncat localhost 8888 | ncat -4l %d -k --send-only --allow 127.0.0.1 " % cfg.iq_server_port
-		print rtl_mus_cmd
-	rtl_mus_thread=threading.Thread(target = lambda:subprocess.Popen(rtl_mus_cmd, shell=True), args=())
-	rtl_mus_thread.start() # The new feature in GNU Radio 3.7: top_block() locks up ALL python threads until it gets the TCP connection.
-	print "[openwebrx-main] Started rtl_mus."
-	time.sleep(1) #wait until it really starts	
+        sync_rtl_thread()
+        sync_mus_thread()
 
 	#Initialize clients
 	clients=[]
@@ -221,6 +209,37 @@ def mutex_watchdog_thread_function():
 			print "[openwebrx-watchdog] Mutex unlock timeout. Locker: \""+str(clients_mutex_locker)+"\" Now unlocking..." 
 			clients_mutex.release()
 		time.sleep(0.5)	
+
+def sync_rtl_thread():
+        global cfg, rtl_thread
+        if rtl_thread:
+                subprocess.Popen("killall rtl_sdr", shell=True)
+                time.sleep(1)
+                rtl_thread=None
+        #Start rtl thread
+        if cfg.start_rtl_thread:
+                rtl_thread=threading.Thread(target = lambda:subprocess.Popen(cfg.start_rtl_command.format(rf_gain=cfg.rf_gain, center_freq=cfg.center_freq, samp_rate=cfg.samp_rate, ppm=cfg.ppm), shell=True),  args=())
+                rtl_thread.start()
+                print "[openwebrx-main] Started rtl_thread: "+cfg.start_rtl_command.format(rf_gain=cfg.rf_gain, center_freq=cfg.center_freq, samp_rate=cfg.samp_rate, ppm=cfg.ppm)
+
+def sync_mus_thread():
+        global cfg, rtl_mus_thread, pypy
+        if rtl_mus_thread:
+                subprocess.Popen("killall ncat", shell=True)
+                subprocess.Popen("killall nc", shell=True)
+                time.sleep(1)
+                rtl_mus_thread=None
+        #Run rtl_mus.py in a different OS thread
+        python_command="pypy" if pypy else "python2"
+        rtl_mus_cmd = python_command+" rtl_mus.py config_rtl"
+        if os.system("ncat --version > /dev/null") != 32512:
+                print "[openwebrx-main] ncat detected, using it instead of rtl_mus:"
+                rtl_mus_cmd = "ncat localhost 8888 | ncat -4l %d -k --send-only --allow 127.0.0.1 " % cfg.iq_server_port
+                print rtl_mus_cmd
+        rtl_mus_thread=threading.Thread(target = lambda:subprocess.Popen(rtl_mus_cmd, shell=True), args=())
+        rtl_mus_thread.start() # The new feature in GNU Radio 3.7: top_block() locks up ALL python threads until it gets the TCP connection.
+        print "[openwebrx-main] Started rtl_mus."
+        time.sleep(1) #wait until it really starts    
 
 def check_server():
 	global spectrum_dsp, server_fail, rtl_thread
@@ -441,6 +460,15 @@ class WebRXHandler(BaseHTTPRequestHandler):
 										new_bpf[1]=int(param_value)
 									elif param_name == "offset_freq" and -cfg.samp_rate/2 <= float(param_value) <= cfg.samp_rate/2:
 										dsp.set_offset_freq(int(param_value))
+                                                                        elif param_name == "center_freq":
+                                                                                if dsp_initialized: dsp.stop()
+                                                                                time.sleep(1)
+                                                                                cfg.shown_center_freq = int(param_value)
+                                                                                cfg.center_freq = cfg.shown_center_freq+cfg.upconverter_freq
+                                                                                sync_rtl_thread()
+                                                                                sync_mus_thread()
+                                                                                if dsp_initialized: dsp.start()
+                                                                                rxws.send(self, "MSG center_freq={0} bandwidth={1} fft_size={2} fft_fps={3} audio_compression={4} fft_compression={5} max_clients={6} setup".format(str(cfg.shown_center_freq),str(cfg.samp_rate),cfg.fft_size,cfg.fft_fps,cfg.audio_compression,cfg.fft_compression,cfg.max_clients))
 									elif param_name=="mod":
 										if (dsp.get_demodulator()!=param_value):
 											if dsp_initialized: dsp.stop()

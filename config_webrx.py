@@ -64,13 +64,15 @@ sdrhu_public_listing = False
 
 # ==== DSP/RX settings ====
 dsp_plugin="csdr"
-fft_fps=9
-fft_size=4096
-#samp_rate = 2048000
-samp_rate = 250000
+fft_fps=15
+fft_size=4096*4
+samp_rate = 2700000
+#samp_rate = 250000
 
-center_freq = 145525000
-rf_gain = 5
+upconverter_freq = 65529300
+
+center_freq = 10000000+upconverter_freq
+rf_gain = 0
 ppm = 0 
 
 audio_compression="adpcm" #valid values: "adpcm", "none" 
@@ -82,7 +84,7 @@ start_rtl_thread=True
 
 # >> RTL-SDR via rtl_sdr 
 
-start_rtl_command="rtl_sdr -s {samp_rate} -f {center_freq} -p {ppm} -g {rf_gain} - | nc -vvl 127.0.0.1 8888".format(rf_gain=rf_gain, center_freq=center_freq, samp_rate=samp_rate, ppm=ppm)
+start_rtl_command="rtl_sdr -s {samp_rate} -f {center_freq} -p {ppm} -g {rf_gain} - | nc -vvl 127.0.0.1 8888"
 format_conversion="csdr convert_u8_f"
 
 # >> Sound card SDR (needs ALSA)
@@ -102,7 +104,7 @@ format_conversion="csdr convert_u8_f"
 
 #You can use other SDR hardware as well, by giving your own command that outputs the I/Q samples...
 
-shown_center_freq = center_freq #you can change this if you use an upconverter
+shown_center_freq = center_freq-upconverter_freq #you can change this if you use an upconverter
 
 client_audio_buffer_size = 5
 #increasing client_audio_buffer_size will:
