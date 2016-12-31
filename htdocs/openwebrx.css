@@ -1,6 +1,6 @@
 /*
 
-	This file is part of OpenWebRX, 
+	This file is part of OpenWebRX,
 	an open-source SDR receiver software with a web UI.
 	Copyright (c) 2013-2015 by Andras Retzler <randras@sdr.hu>
 
@@ -23,9 +23,123 @@ html, body
 {
 	margin: 0;
 	padding: 0;
-   height: 100%;
+	height: 100%;
 	font-family: "DejaVu Sans", Verdana, Geneva, sans-serif;
 	overflow: hidden;
+}
+
+input
+{
+	vertical-align:middle;
+}
+
+input[type=range]
+{
+	-webkit-appearance: none;
+	margin: 0 0;
+}
+input[type=range]:focus
+{
+	outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track
+{
+	height: 5px;
+	cursor: pointer;
+	animate: 0.2s;
+	box-shadow: 0px 0px 0px #000000;
+	background: #B6B6B6;
+	/*border-radius: 11px;*/
+	border: 1px solid #8A8A8A;
+}
+
+input[type=range]::-webkit-slider-thumb
+{
+	box-shadow: 1px 1px 1px #828282;
+	border: 1px solid #8A8A8A;
+	height: 15px;
+	width: 15px;
+	border-radius: 10px;
+	background: #FFFFFF;
+	cursor: pointer;
+	-webkit-appearance: none;
+	margin-top: -7px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track
+{
+	background: #B6B6B6;
+}
+
+input[type=range]::-moz-range-track
+{
+	height: 3px;
+	cursor: pointer;
+	animate: 0.2s;
+	box-shadow: 0px 0px 0px #000000;
+	background: #B6B6B6;
+	border-radius: 11px;
+	border: 1px solid #8A8A8A;
+}
+
+input[type=range]::-moz-range-thumb
+{
+	box-shadow: 1px 1px 1px #828282;
+	border: 1px solid #8A8A8A;
+	height: 12px;
+	width: 12px;
+	border-radius: 10px;
+	background: #FFFFFF;
+	cursor: pointer;
+}
+
+input[type=range]::-ms-track
+{
+	width: 100%;
+	height: 7px;
+	cursor: pointer;
+	animate: 0.2s;
+	background: transparent;
+	border-color: transparent;
+	color: transparent;
+}
+
+input[type=range]::-ms-fill-lower
+ {
+	background: #B6B6B6;
+	border: 1px solid #8A8A8A;
+	border-radius: 22px;
+	box-shadow: 0px 0px 0px #000000;
+}
+
+input[type=range]::-ms-fill-upper
+{
+	background: #B6B6B6;
+	border: 1px solid #8A8A8A;
+	border-radius: 22px;
+	box-shadow: 0px 0px 0px #000000;
+}
+
+input[type=range]::-ms-thumb
+{
+	box-shadow: 1px 1px 1px #828282;
+	border: 1px solid #8A8A8A;
+	height: 24px;
+	width: 7px;
+	border-radius: 0px;
+	background: #FFFFFF;
+	cursor: pointer;
+}
+
+input[type=range]:focus::-ms-fill-lower
+{
+	background: #B6B6B6;
+}
+
+input[type=range]:focus::-ms-fill-upper
+{
+	background: #B6B6B6;
 }
 
 #webrx-top-container
@@ -127,7 +241,7 @@ html, body
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
-	background-image:url(gfx/webrx-photo-gradient-corner.png);	
+	background-image:url(gfx/webrx-photo-gradient-corner.png);
 	width: 59px;
 	height: 92px;
 
@@ -140,7 +254,7 @@ html, body
 	left: 59px;
 	right: 59px;
 	height: 92px;
-	background-image:url(gfx/webrx-photo-gradient-middle.png);	
+	background-image:url(gfx/webrx-photo-gradient-middle.png);
 }
 
 #webrx-photo-gradient-right
@@ -148,7 +262,7 @@ html, body
 	position: absolute;
 	bottom: 0px;
 	right: 0px;
-	background-image:url(gfx/webrx-photo-gradient-corner.png);	
+	background-image:url(gfx/webrx-photo-gradient-corner.png);
 	width: 59px;
 	height: 92px;
    -webkit-transform:scaleX(-1);
@@ -341,7 +455,7 @@ html, body
 	background-color: #999999;
 	color: White;
 	z-index:9999; /*should be higher?
-	
+
 }*/
 
 /* removed non-free fonts like that: */
@@ -369,7 +483,7 @@ html, body
 	padding: 0;
 	margin: 0;
 	line-height:22px;
-	
+
 }
 
 #webrx-mouse-freq
@@ -382,8 +496,10 @@ html, body
 	margin-bottom: 5px;
 }
 
+
 .openwebrx-panel
 {
+	transform: perspective( 600px );
 	visibility: hidden;
 	background-color: #575757;
 	padding: 10px;
@@ -415,9 +531,7 @@ html, body
 	-moz-border-radius: 5px;
 	color: White;
 	font-weight: bold;
-	width: auto;
-	float: left;
-	margin-right: 5px;
+	margin-right: 1px;
 	cursor: pointer;
 	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.0	, #373737), color-stop(1, #4F4F4F) );
 	background:-moz-linear-gradient( center top, #373737 0%, #4F4F4F 100% );
@@ -427,6 +541,7 @@ html, body
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+	display: inline-block;
 }
 
 .openwebrx-button:hover
@@ -437,13 +552,72 @@ html, body
 	color: #FFFF50;
 }
 
-.openwebrx-button:active 
+.openwebrx-button:active
 {
 	background: #777777;
-	color: #FFFF50;	
+	color: #FFFF50;
 }
 
-#openwebrx-client-log-title 
+.openwebrx-demodulator-button
+{
+	width: 35px;
+	height: 19px;
+	font-size: 12pt;
+	text-align: center;
+}
+
+.openwebrx-square-button img
+{
+	height: 30px;
+}
+
+.openwebrx-round-button
+{
+	margin-right: -2px;
+	width: 35px;
+	height: 35px;
+	border-radius: 25px;
+}
+
+.openwebrx-round-button img
+{
+	height: 30px;
+}
+
+.openwebrx-round-button-small
+{
+	margin-right: -3px;
+	width:  20px;
+	height: 20px;
+	border-radius: 25px;
+}
+
+.openwebrx-round-button-small img
+{
+	height: 20px;
+}
+
+img.openwebrx-mirror-img
+{
+	transform: scale(-1, 1);
+}
+
+
+.openwebrx-round-rightarrow img
+{
+	position: relative;
+	left: 12px;
+	top: 3px;
+}
+
+.openwebrx-round-leftarrow img
+{
+	position: relative;
+	left: 7px;
+	top: 3px;
+}
+
+#openwebrx-client-log-title
 {
 	margin-bottom: 5px;
 	font-weight: bold;
@@ -512,7 +686,7 @@ html, body
 	display: table-cell;
 	padding-left: 5px;
 	padding-right: 5px;
-	cursor:pointer;	
+	cursor:pointer;
 }
 
 #openwebrx-main-buttons li:hover
@@ -539,3 +713,96 @@ html, body
 	font-weight: bold;
 }
 
+#openwebrx-panel-receiver
+{
+	width:110px;
+}
+
+#openwebrx-mute-on
+{
+	color: lime;
+}
+
+#openwebrx-mute-off
+{
+	color: white;
+}
+
+.openwebrx-panel-slider
+{
+	position: relative;
+	top: -2px;
+	width:91px;
+}
+
+.openwebrx-sliderbtn-img
+{
+	width: 14px;
+	position:relative;
+	top: 1px;
+}
+
+.openwebrx-panel-line
+{
+	padding-top: 5px;
+}
+
+#openwebrx-smeter-outer
+{
+	border-color: #888;
+	border-style: solid;
+	border-width: 0px;
+	width: 255px;
+	height: 7px;
+	background-color: #373737;
+	border-radius: 3px;
+	position: relative;
+}
+#openwebrx-smeter-bar
+{
+	transition: all 0.2s linear;
+	width: 0px;
+	height: 7px;
+	background: linear-gradient(to top, #ff5939 , #961700);
+	position: absolute;
+	margin: 0; padding: 0; left: 0;
+	border-radius: 3px;
+}
+
+#openwebrx-smeter-db
+{
+	color: #aaa;
+	display: inline-block;
+	font-size: 10pt;
+	float: right;
+	margin-right: 5px;
+	margin-top: 29px;
+	font-family: 'expletus-sans-medium';
+}
+
+#openwebrx-big-grey
+{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	opacity: 0.8;
+	background-color: #777;
+	left: 0;
+	top: 0;
+	z-index: 1001;
+	display: none;
+	vertical-align: middle;
+	text-align: center;
+	color: white;
+	font-weight: bold;
+	font-size: 20pt;
+	cursor: pointer;
+	transition: opacity 0.3s linear;
+}
+
+#openwebrx-big-grey img
+{
+	width: 150px;
+}
